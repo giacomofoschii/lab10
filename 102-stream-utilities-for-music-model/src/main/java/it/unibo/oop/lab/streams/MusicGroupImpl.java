@@ -74,6 +74,10 @@ public final class MusicGroupImpl implements MusicGroup {
         return songs.stream()
                     .reduce((a, b) -> (a.getDuration() >= b.getDuration()) ? a : b)
                     .map(a -> a.getSongName());
+        /*return this.songs.stream()
+                .collect(Collectors.maxBy(Comparator.comparingDouble(Song::getDuration)))
+                // equivalent to Collectors.maxBy((a, b) -> Double.compare(a.getDuration(), b.getDuration()))
+                .map(Song::getSongName); */
     }
 
     private double albumDuration (final String albumName) {
@@ -90,6 +94,11 @@ public final class MusicGroupImpl implements MusicGroup {
     public Optional<String> longestAlbum() {
         return albums.keySet().stream()
                             .reduce((a, b) -> (albumDuration(a) >= albumDuration(b)) ? a : b);
+        /*return this.songs.stream().filter(a -> a.getAlbumName().isPresent())
+                .collect(Collectors.groupingBy(Song::getAlbumName, Collectors.summingDouble(Song::getDuration)))
+                .entrySet().stream()
+                .collect(Collectors.maxBy(Comparator.comparingDouble(Entry::getValue)))
+                .flatMap(Entry::getKey); */
     }
 
     private static final class Song {
