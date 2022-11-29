@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.BorderFactory;
@@ -14,6 +15,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import java.io.*;
+import java.util.stream.*;
 
 /**
  * Modify this small program adding new filters.
@@ -30,15 +34,23 @@ import javax.swing.JTextArea;
  * 5) Write the count for each word, e.g. "word word pippo" should output "pippo -> 1 word -> 2"
  *
  */
-public final class LambdaFilter extends JFrame {
+public final class LambdaFilter extends JFrame{
 
     private static final long serialVersionUID = 1760990730218643730L;
 
-    private enum Command {
+    private enum Command{
         /**
          * Commands.
          */
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+        LOWERCASE("Convert to lower case", (a -> a.toLowerCase())),
+        COUNTCHAR("Count the number of char", (a -> Integer.toString(a.length()))),
+        COUNTLINE("Count the number of line", (a -> Long.toString(a.lines().count()))),
+        ORDERED("List all the words in alphabetical order", (a -> List.of(a.split(" |\n")).stream()
+                    .sorted().collect(Collectors.joining(" ")))),
+        COUNTWORD("Write the count for each word", (a -> List.of(a.split(" |\n")).stream()
+                    .collect(Collectors.groupingBy(String::valueOf, Collectors.counting())).entrySet().stream()
+                    .map(b -> b.getKey() + " -> " + b.getValue()).collect(Collectors.joining("\n"))));
 
         private final String commandName;
         private final Function<String, String> fun;
